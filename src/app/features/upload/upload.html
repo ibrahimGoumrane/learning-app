@@ -1,0 +1,85 @@
+<!-- 
+  UPLOAD COMPONENT
+  Demonstrates event handling (drag & drop) and conditional rendering.
+-->
+
+<div class="mx-auto max-w-2xl py-12 sm:py-16">
+  
+  <div class="text-center mb-10">
+    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Upload Documents</h2>
+    <p class="mt-4 text-lg leading-6 text-slate-600">
+      Upload your CV or Job Description to get started with the analysis.
+    </p>
+  </div>
+
+  <!-- 
+    DROP ZONE 
+    We bind the class 'border-indigo-500 bg-indigo-50' conditionally when isDragging() is true.
+    Events:
+    - (dragover): Triggered when a file is dragged over the area.
+    - (dragleave): Triggered when a file leaves the area.
+    - (drop): Triggered when a file is dropped.
+  -->
+  <div 
+    class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-12 transition-all duration-200 ease-in-out"
+    [class.border-indigo-500]="isDragging()"
+    [class.bg-indigo-50]="isDragging()"
+    [class.scale-[1.02]]="isDragging()"
+    [class.border-slate-300]="!isDragging()"
+    [class.bg-slate-50]="!isDragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)">
+    
+    @if (!selectedFile()) {
+      <!-- Empty State -->
+      <div class="rounded-full bg-indigo-100 p-4 mb-4 text-indigo-600 transition-transform duration-300" [class.scale-110]="isDragging()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+        </svg>        
+      </div>
+
+      <div class="text-center">
+        <p class="text-lg font-semibold text-slate-900">
+          Drag and drop your file here
+        </p>
+        <p class="mt-1 text-sm text-slate-500">
+          PDF, DOCX up to 10MB
+        </p>
+      </div>
+
+      <div class="mt-6">
+        <label for="file-upload" class="cursor-pointer rounded-md bg-white px-4 py-2 text-sm font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors">
+          <span>Select file</span>
+          <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx">
+        </label>
+      </div>
+    } @else {
+      <!-- Selected File State -->
+      <div class="flex w-full flex-col items-center">
+        <div class="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 w-full mb-6">
+           <div class="h-12 w-12 flex-shrink-0 rounded-lg bg-red-100 flex items-center justify-center text-red-600">
+             <!-- PDF Icon style -->
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clip-rule="evenodd" />
+                <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375h1.875a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+             </svg>
+           </div>
+           <div class="flex-1 min-w-0">
+             <p class="text-sm font-medium text-slate-900 truncate">{{ selectedFile()?.name }}</p>
+             <p class="text-xs text-slate-500">{{ (selectedFile()?.size || 0) / 1024 / 1024 | number:'1.2-2' }} MB</p>
+           </div>
+           <button class="rounded-full p-1 hover:bg-slate-100 text-slate-400 hover:text-red-500 transition-colors" (click)="selectedFile.set(null)">
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+               <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+             </svg>
+           </button>
+        </div>
+
+        <button class="w-full rounded-md bg-gradient-to-r from-indigo-600 to-violet-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:from-indigo-500 hover:to-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all">
+          Analyze Document
+        </button>
+      </div>
+    }
+  </div>
+</div>

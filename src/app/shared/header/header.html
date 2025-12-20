@@ -1,0 +1,14 @@
+<!-- src/app/shared/header/header.component.html -->
+<header class="bg-indigo-50 p-4 flex justify-between items-center">
+  <a routerLink="/" class="font-bold text-xl">AI Recruiter</a>
+
+  <div>
+    @if (user()) {
+    <span class="mr-4">Hello, {{ user().firstName }}</span>
+    <clerk-user-button></clerk-user-button>
+    } @else {
+    <a routerLink="/user/sign-up" class="px-3 py-1 bg-green-500 text-white rounded mr-2">Sign Up</a>
+    <a routerLink="/user/sign-in" class="px-3 py-1 bg-blue-500 text-white rounded">Login</a>
+    }
+  </div>
+</header>
