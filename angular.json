@@ -6,10 +6,28 @@
     "analytics": false
   },
   "newProjectRoot": "projects",
+   "schematics": {
+      "@schematics/angular:component": {
+        "skipTests": true,
+        "standalone": true,
+        "style": "none"
+      },
+      "@schematics/angular:class": {
+        "skipTests": true
+      },
+      "@schematics/angular:directive": {
+        "skipTests": true
+      },
+      "@schematics/angular:pipe": {
+        "skipTests": true
+      },
+      "@schematics/angular:service": {
+        "skipTests": true
+      }
+      },
   "projects": {
     "learning-app": {
       "projectType": "application",
-      "schematics": {},
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
