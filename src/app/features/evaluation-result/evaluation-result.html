@@ -1,0 +1,111 @@
+<!-- 
+  EVALUATION RESULT TEMPLATE
+  Displays a table of evaluation reports.
+-->
+
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+  
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-2xl font-bold leading-6 text-slate-900">Evaluation Results</h1>
+      <p class="mt-2 text-sm text-slate-700">
+        A list of all processed evaluations including CVs, Job Descriptions, and AI analysis results.
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+          
+          <table class="min-w-full divide-y divide-slate-300">
+            <thead class="bg-slate-50">
+              <tr>
+                <!-- Table Headers -->
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">ID</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">CV File</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Job Desc File</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Result</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+              
+              <!-- 
+                @for Loop
+                The @for block is Angular's new control flow syntax for rendering lists.
+                It repeats the <tr> element for each item in the 'evaluationData' signal.
+                'track item.id' helps Angular optimize rendering by uniquely identifying rows.
+              -->
+              @for (item of evaluationData(); track item.id) {
+                <tr>
+                  <!-- ID Column -->
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">
+                    {{ item.id }}
+                  </td>
+                  
+                  <!-- CV File Column -->
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
+                    <div class="flex items-center gap-2">
+                       <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                       </svg>
+                       <button (click)="downloadFile(item.cvFileName)" class="text-indigo-600 hover:text-indigo-900 hover:underline">
+                         {{ item.cvFileName }}
+                       </button>
+                    </div>
+                  </td>
+
+                  <!-- JD File Column -->
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
+                    <div class="flex items-center gap-2">
+                       <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                       </svg>
+                       <button (click)="downloadFile(item.jdFileName)" class="text-indigo-600 hover:text-indigo-900 hover:underline">
+                         {{ item.jdFileName }}
+                       </button>
+                    </div>
+                  </td>
+
+                  <!-- Result Column -->
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
+                    <div class="flex flex-col">
+                      <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"
+                            [ngClass]="{
+                              'bg-green-50 text-green-700 ring-green-600/20': item.decision === 'PASS',
+                              'bg-yellow-50 text-yellow-800 ring-yellow-600/20': item.decision === 'REVIEW',
+                              'bg-red-50 text-red-700 ring-red-600/20': item.decision === 'REJECT'
+                            }">
+                        {{ item.decision }}
+                      </span>
+                      <span class="mt-1 text-xs text-slate-400">Score: {{ item.overallScore | percent }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Actions / Detail Column -->
+                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                    <button (click)="viewDetails(item.id)" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded-md transition-colors hover:bg-indigo-100">
+                      View Details<span class="sr-only">, {{ item.id }}</span>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <!-- @empty block is shown if evaluationData() is empty -->
+                <tr>
+                   <td colspan="5" class="py-4 text-center text-sm text-slate-500">
+                     No evaluations found.
+                   </td>
+                </tr>
+              }
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

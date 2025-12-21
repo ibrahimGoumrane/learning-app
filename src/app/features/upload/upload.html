@@ -1,85 +1,136 @@
 <!-- 
-  UPLOAD COMPONENT
-  Demonstrates event handling (drag & drop) and conditional rendering.
+  UPLOAD COMPONENT - DUAL FILE UPLOAD
+  Allows users to upload both a CV and a Job Description.
 -->
 
-<div class="mx-auto max-w-2xl py-12 sm:py-16">
+<div class="mx-auto max-w-4xl py-12 sm:py-16 px-4 sm:px-6 lg:px-8 min-h-screen">
   
   <div class="text-center mb-10">
     <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Upload Documents</h2>
     <p class="mt-4 text-lg leading-6 text-slate-600">
-      Upload your CV or Job Description to get started with the analysis.
+      Please upload both the Candidate's Resume and the Job Description to start the analysis.
     </p>
   </div>
 
-  <!-- 
-    DROP ZONE 
-    We bind the class 'border-indigo-500 bg-indigo-50' conditionally when isDragging() is true.
-    Events:
-    - (dragover): Triggered when a file is dragged over the area.
-    - (dragleave): Triggered when a file leaves the area.
-    - (drop): Triggered when a file is dropped.
-  -->
-  <div 
-    class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-12 transition-all duration-200 ease-in-out"
-    [class.border-indigo-500]="isDragging()"
-    [class.bg-indigo-50]="isDragging()"
-    [class.scale-[1.02]]="isDragging()"
-    [class.border-slate-300]="!isDragging()"
-    [class.bg-slate-50]="!isDragging()"
-    (dragover)="onDragOver($event)"
-    (dragleave)="onDragLeave($event)"
-    (drop)="onDrop($event)">
+  <!-- Grid layout for side-by-side on large screens, stacked on small -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+
+    <!-- ZONE 1: CV / RESUME -->
+    <div class="flex flex-col gap-2">
+       <h3 class="text-lg font-semibold text-slate-900">1. Candidate Resume (CV)</h3>
+       <div 
+        class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 transition-all duration-200 ease-in-out h-64"
+        [class.border-indigo-500]="isDraggingCv()"
+        [class.bg-indigo-50]="isDraggingCv()"
+        [class.scale-[1.02]]="isDraggingCv()"
+        [class.border-slate-300]="!isDraggingCv()"
+        [class.bg-slate-50]="!isDraggingCv()"
+        (dragover)="onDragOver($event, 'cv')"
+        (dragleave)="onDragLeave($event, 'cv')"
+        (drop)="onDrop($event, 'cv')">
+        
+        @if (!cvFile()) {
+          <!-- Empty State CV -->
+          <div class="rounded-full bg-indigo-100 p-3 mb-3 text-indigo-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+          <div class="text-center">
+            <p class="text-sm font-medium text-slate-900">Drag & Drop Resume</p>
+            <p class="text-xs text-slate-500 mt-1">PDF, DOCX</p>
+          </div>
+          <div class="mt-4">
+            <label for="cv-upload" class="cursor-pointer rounded-md bg-white px-3 py-2 text-xs font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors">
+              <span>Select File</span>
+              <input id="cv-upload" name="cv-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'cv')" accept=".pdf,.doc,.docx">
+            </label>
+          </div>
+        } @else {
+          <!-- Selected State CV -->
+          <div class="flex w-full flex-col items-center">
+             <div class="h-10 w-10 flex-shrink-0 rounded-lg bg-red-100 flex items-center justify-center text-red-600 mb-2">
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                  <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clip-rule="evenodd" />
+               </svg>
+             </div>
+             <p class="text-sm font-medium text-slate-900 truncate max-w-[150px]">{{ cvFile()?.name }}</p>
+             <p class="text-xs text-slate-500 mb-3">{{ (cvFile()?.size || 0) / 1024 / 1024 | number:'1.2-2' }} MB</p>
+             <button class="text-xs text-red-600 hover:text-red-800 font-medium" (click)="clearFile('cv')">
+               Remove
+             </button>
+          </div>
+        }
+       </div>
+    </div>
+
+    <!-- ZONE 2: JOB DESCRIPTION -->
+    <div class="flex flex-col gap-2">
+      <h3 class="text-lg font-semibold text-slate-900">2. Job Description (JD)</h3>
+      <div 
+       class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 transition-all duration-200 ease-in-out h-64"
+       [class.border-indigo-500]="isDraggingJd()"
+       [class.bg-indigo-50]="isDraggingJd()"
+       [class.scale-[1.02]]="isDraggingJd()"
+       [class.border-slate-300]="!isDraggingJd()"
+       [class.bg-slate-50]="!isDraggingJd()"
+       (dragover)="onDragOver($event, 'jd')"
+       (dragleave)="onDragLeave($event, 'jd')"
+       (drop)="onDrop($event, 'jd')">
+       
+       @if (!jdFile()) {
+         <!-- Empty State JD -->
+         <div class="rounded-full bg-indigo-100 p-3 mb-3 text-indigo-600">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+             <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+           </svg>
+         </div>
+         <div class="text-center">
+           <p class="text-sm font-medium text-slate-900">Drag & Drop JD</p>
+           <p class="text-xs text-slate-500 mt-1">PDF, DOCX</p>
+         </div>
+         <div class="mt-4">
+           <label for="jd-upload" class="cursor-pointer rounded-md bg-white px-3 py-2 text-xs font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors">
+             <span>Select File</span>
+             <input id="jd-upload" name="jd-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'jd')" accept=".pdf,.doc,.docx">
+           </label>
+         </div>
+       } @else {
+         <!-- Selected State JD -->
+         <div class="flex w-full flex-col items-center">
+            <div class="h-10 w-10 flex-shrink-0 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                 <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <p class="text-sm font-medium text-slate-900 truncate max-w-[150px]">{{ jdFile()?.name }}</p>
+            <p class="text-xs text-slate-500 mb-3">{{ (jdFile()?.size || 0) / 1024 / 1024 | number:'1.2-2' }} MB</p>
+            <button class="text-xs text-red-600 hover:text-red-800 font-medium" (click)="clearFile('jd')">
+              Remove
+            </button>
+         </div>
+       }
+      </div>
+   </div>
+
+  </div>
+
+  <!-- Analyze Button - Disabled if files are missing -->
+  <div class="mt-6">
+    <button 
+      (click)="analyze()" 
+      [disabled]="!cvFile() || !jdFile()"
+      [class.opacity-50]="!cvFile() || !jdFile()"
+      [class.cursor-not-allowed]="!cvFile() || !jdFile()"
+      class="w-full rounded-md bg-gradient-to-r from-indigo-600 to-violet-600 px-3.5 py-4 text-base font-semibold text-white shadow-sm hover:from-indigo-500 hover:to-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all">
+      Analyze Documents
+    </button>
     
-    @if (!selectedFile()) {
-      <!-- Empty State -->
-      <div class="rounded-full bg-indigo-100 p-4 mb-4 text-indigo-600 transition-transform duration-300" [class.scale-110]="isDragging()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-        </svg>        
-      </div>
-
-      <div class="text-center">
-        <p class="text-lg font-semibold text-slate-900">
-          Drag and drop your file here
+    @if (!cvFile() || !jdFile()) {
+        <p class="text-center text-sm text-slate-500 mt-2">
+            Please upload both files to proceed.
         </p>
-        <p class="mt-1 text-sm text-slate-500">
-          PDF, DOCX up to 10MB
-        </p>
-      </div>
-
-      <div class="mt-6">
-        <label for="file-upload" class="cursor-pointer rounded-md bg-white px-4 py-2 text-sm font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors">
-          <span>Select file</span>
-          <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx">
-        </label>
-      </div>
-    } @else {
-      <!-- Selected File State -->
-      <div class="flex w-full flex-col items-center">
-        <div class="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 w-full mb-6">
-           <div class="h-12 w-12 flex-shrink-0 rounded-lg bg-red-100 flex items-center justify-center text-red-600">
-             <!-- PDF Icon style -->
-             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-                <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clip-rule="evenodd" />
-                <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375h1.875a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-             </svg>
-           </div>
-           <div class="flex-1 min-w-0">
-             <p class="text-sm font-medium text-slate-900 truncate">{{ selectedFile()?.name }}</p>
-             <p class="text-xs text-slate-500">{{ (selectedFile()?.size || 0) / 1024 / 1024 | number:'1.2-2' }} MB</p>
-           </div>
-           <button class="rounded-full p-1 hover:bg-slate-100 text-slate-400 hover:text-red-500 transition-colors" (click)="selectedFile.set(null)">
-             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-               <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-             </svg>
-           </button>
-        </div>
-
-        <button class="w-full rounded-md bg-gradient-to-r from-indigo-600 to-violet-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:from-indigo-500 hover:to-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all">
-          Analyze Document
-        </button>
-      </div>
     }
   </div>
+
 </div>

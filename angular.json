@@ -25,68 +25,68 @@
         "skipTests": true
       }
       },
-  "projects": {
-    "learning-app": {
-      "projectType": "application",
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.css"
-            ]
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
+    "projects": {
+      "learning-app": {
+        "projectType": "application",
+        "root": "",
+        "sourceRoot": "src",
+        "prefix": "app",
+        "architect": {
+          "build": {
+            "builder": "@angular/build:application",
+            "options": {
+              "browser": "src/main.ts",
+              "tsConfig": "tsconfig.app.json",
+              "assets": [
                 {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "glob": "**/*",
+                  "input": "public"
                 }
               ],
-              "outputHashing": "all"
+              "styles": [
+                "src/styles.css"
+              ]
             },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "learning-app:build:production"
+            "configurations": {
+              "production": {
+                "budgets": [
+                  {
+                    "type": "initial",
+                    "maximumWarning": "500kB",
+                    "maximumError": "1MB"
+                  },
+                  {
+                    "type": "anyComponentStyle",
+                    "maximumWarning": "4kB",
+                    "maximumError": "8kB"
+                  }
+                ],
+                "outputHashing": "all"
+              },
+              "development": {
+                "optimization": false,
+                "extractLicenses": false,
+                "sourceMap": true
+              }
             },
-            "development": {
-              "buildTarget": "learning-app:build:development"
-            }
+            "defaultConfiguration": "production"
           },
-          "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test"
+          "serve": {
+            "builder": "@angular/build:dev-server",
+            "configurations": {
+              "production": {
+                "buildTarget": "learning-app:build:production"
+              },
+              "development": {
+                "buildTarget": "learning-app:build:development"
+              }
+            },
+            "defaultConfiguration": "development"
+          },
+          "test": {
+            "builder": "@angular/build:unit-test"
+          }
         }
       }
     }
-  }
 }
